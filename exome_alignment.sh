@@ -1,0 +1,1 @@
+/mnt/idash/Genomics/bin/bwa mem
