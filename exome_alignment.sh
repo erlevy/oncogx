@@ -8,7 +8,7 @@ wait
 samtools view -Sb ${output}/aln.sam > ${output}/aln.bam
 wait
 
-samtools sort -nf ${output}/aln.bam ${output}/aln.sorted.bam
+samtools sort -@ 28 ${output}/aln.bam ${output}/aln.sorted
 wait
 
 samtools index ${output}/aln.sorted.bam
