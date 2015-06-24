@@ -26,8 +26,48 @@ samtools flagstat $bam_inpath/$name.bam >> $bam_outpath/$name.summary.txt
 # extracting overlapping+unmapped TCR reads
 #mv $bam_outpath/$name.bam $bam_outpath/$name.TCRreg.bam
 #samtools view -b -L $region_file $bam_outpath/$name.bam > $bam_outpath/$name.TCRreg.bam
-samtools view -b -F 4 $bam_inpath/$name.bam 7:38295938-38407399 7:142000817-142510993 9:33618203-33662661 14:22090036-23014042 > $bam_outpath/$name.TCR.bam
+
+ # double check proper assembly file was chosen
+ # samtools view header | awk print AS:<ref assem> from second line |
+ #   sed remove "AS:"
+ #echo "Double checking reference alignment:"
+ bam_align=$(samtools view -H $bam_inpath/$name.bam | awk '{if(NR==2) print}' | awk 'match($0, /AS:.*/) {split(substr($0, RSTART, RLENGTH), a, " ")
+ print a[1]}' | sed 's/^...//')
+ if [ -z "${bam_align}" ] ; then # files doesn't contain "AS:". Try "UR:"
+ 	bam_align=$(samtools view -H $bam_inpath/$name.bam | awk '{if(NR==2) print}' | awk 'match($0, /UR:.*/) {split(substr($0, RSTART, RLENGTH), a, " ")
+ 	print a[1]}' | sed 's/^...//')
+ fi
+ if [ -z "${bam_align}" ] ; then # files doesn't contain "UR:". Try "SN:"
+ 	bam_align=$(samtools view -H $bam_inpath/$name.bam | awk '{if(NR==2) print}' | awk 'match($0, /SN:.*/) {split(substr($0, RSTART, RLENGTH), a, " ")
+ 	print a[1]}' | sed 's/^...//')
+ 	if [[ "$bam_align" =~ "chr" ]] ; then # only hg19 contains "chr"
+ 		bam_align="hg19"
+ 	else
+ 		bam_align="grch37"
+ 	fi
+ fi
+ 
+# find which assembly the bam file says it is
+if [[ "$bam_align" =~ .*([Gg][Rr][Cc][Hh]37)+.* ]] ; then
+	bam_align="grch37"
+elif [[ "$bam_align" =~ .*([Hh][Gg]19)+.* ]] ; then
+	bam_align="hg19"
+elif [[ "$bam_align" =~ .*(Homo_sapiens_assembly19.fasta)+.* ]] ; then
+	bam_align="hg19"
+fi
+ 
+echo $bam_align
+
+if [ "$bam_align" == "hg19" ] ; then
+	samtools view -b -F 4 $bam_inpath/$name.bam chr7:38295938-38407399 chr7:142000817-142510993 chr9:33618203-33662661 chr14:22090036-23014042 > $bam_outpath/$name.TCR.bam
+	wait
+fi
+if [ "$bam_align" == "grch37" ] ; then
+	samtools view -b -F 4 $bam_inpath/$name.bam 7:38295938-38407399 7:142000817-142510993 9:33618203-33662661 14:22090036-23014042 > $bam_outpath/$name.TCR.bam
+	wait
+fi
 wait
+	
 samtools view -b -f 4 $bam_inpath/$name.bam > $bam_outpath/$name.unmapped.bam
 wait
 samtools index $bam_outpath/$name.TCR.bam
@@ -41,14 +81,14 @@ samtools view -c $bam_outpath/$name.TCRreg.bam >> $bam_outpath/$name.summary.txt
 wait
 samtools sort -n  $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCRreg.sorted
 wait
-#bedtools bamtofastq -i $bam_outpath/$name.TCRreg.sorted.bam -fq $bam_outpath/$name.TCRreg.fastq
-#wait
-#bgzip $bam_outpath/$name.TCRreg.fastq
-#wait
+bedtools bamtofastq -i $bam_outpath/$name.TCRreg.sorted.bam -fq $bam_outpath/$name.TCRreg.fastq
+wait
+bgzip $bam_outpath/$name.TCRreg.fastq
+wait
 
 
 # move back
-#mv $bam_outpath/$name.TCRreg.fastq.gz $outdir
+mv $bam_outpath/$name.TCRreg.fastq.gz $outdir
 mv $bam_outpath/$name.summary.txt $outdir
 mv $bam_outpath/$name.TCRreg.sorted.bam $outdir
 wait

@@ -3,13 +3,13 @@
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
-filename='/scratch/data/brca_slicer/ref/filtered_exomes_brca_500_2.txt'
+filename='/scratch/data/brca_slicer/ref/filtered_exomes_brca_25.txt'
 filelines=`cat $filename`
 data_dir='/scratch/data/brca_slicer/data'
 output_dir='/scratch/data/brca_slicer/'
 NUM=0
 QUEUE=""
-MAX_NPROC=26
+MAX_NPROC=10
 
 function queue {
     QUEUE="$QUEUE $1"
@@ -44,7 +44,7 @@ function main {
 	local time_start=$(date +%s)
 	echo "Download start: " >> ${output_dir}/log.txt
 	echo $(date) >> ${output_dir}/log.txt
-    gtdownload -c /mnt/oncogxA/Administration/TCGA/cghub.key --max-children 1 -p ${output_dir}/data -d $1 >> ${output_dir}/log.txt
+    gtdownload -c /mnt/oncogxA/Administration/TCGA/cghub.key --max-children 3 -p ${output_dir}/data -d $1 >> ${output_dir}/log.txt
     wait
 	local download_end=$(date +%s)
     local time_download=$(echo "$download_end - $time_start" | bc)
@@ -53,7 +53,7 @@ function main {
 	for file in $data_dir/$1/*.bam; do
 		[ ! -f "$file" ] && continue
 		echo $file
-		/home/edlevy/scripts/Bam_to_Fastq-fromAnnai-Single.sh $file /scratch/data/Target-genesTR.ABDG-GenomicReg.bed ${output_dir}/slices /scratch/data/slices >> /scratch/data/slicer_test/log.txt
+		/home/edlevy/oncogx/Bam_to_Fastq.sh $file /scratch/data/Target-genesTR.ABDG-GenomicReg.bed ${output_dir}/slices /scratch/data/slices >> ${output_dir}/log.txt
 		wait
 	done
 	local slice_end=$(date +%s)

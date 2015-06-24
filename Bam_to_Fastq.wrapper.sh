@@ -1,23 +1,14 @@
 #!/bin/bash
 
-bam_dir='/scratch/data/brca_slicer/slices'
-out_dir='/scratch/data/brca_slicer/fastq'
+bam_dir='/scratch/immunoseq/aligned'
+out_dir='/scratch/immunoseq/sliced/dedup'
 CNT=1
-
-function main {
-	bedtools bamtofastq -i $file -fq $out_dir/$name.TCRreg.fastq
-	wait
-	bgzip $out_dir/$name.TCRreg.fastq
-	wait
-}
-
 
 for file in ${bam_dir}/*.bam; do
 	name=`basename $file ".bam"`
 	dir=`dirname $file`
-	#/home/edlevy/scripts/Bam_to_Fastq-fromAnnai-Single.sh $file /scratch/data/Target-genesTR.ABDG-GenomicReg.bed /scratch/data/test/100/fastq /scratch/data/test/100/tcr_bam & 
-
-	main $file $name $dir &
+	
+	/home/edlevy/oncogx/Bam_to_Fastq.sh $file /scratch/data/Target-genesTR.ABDG-GenomicReg.bed ${out_dir} ${out_dir} & 
 
 	if [ $(($CNT % 26)) -eq 0 ]; then
 		echo "##DOING 26##"
