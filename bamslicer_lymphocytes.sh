@@ -57,6 +57,10 @@ function bamslicer {
 	query_unmapped="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&range=*"
 }
 
+function check_reference {
+	
+}
+
 function fastq_convert {
 	name=$1
 	bamslicer $name
@@ -100,7 +104,7 @@ function main {
 #	local time_start=$(date +%s)
 #	echo "Download start: " >> ${output_dir}/log.txt
 #	echo $(date) >> ${output_dir}/log.txt
-	fastq_convert $1 &
+	fastq_convert $1 $2 &
 #	wait
 #	local download_end=$(date +%s)
 #    local time_download=$(echo "$download_end - $time_start" | bc)
@@ -124,9 +128,10 @@ function main {
 echo Start
 echo "Exome	Download	Slice" > ${output_dir}/summary.txt
 #echo "Log start: $(date)" > ${output_dir}/log.txt
-for line in $filelines ; do
+while read f1 f2
+do
 #	echo $line >> ${output_dir}/log.txt
-	main $line #>> ${output_dir}/log.txt & 
+	main $f1 $f2 #>> ${output_dir}/log.txt & 
 
     PID=$!
     queue $PID
@@ -135,6 +140,6 @@ for line in $filelines ; do
         checkqueue
         sleep 0.4
     done
-done
+done < $filename
 wait # wait for all processes to finish before exit
 #echo "Log end: $(date)" >> ${output_dir}/log.txt
