@@ -4,7 +4,7 @@
 ## For more processes change the max_jobs variable
 
 base_dir="/scratch/data/bamslicer"
-filename="${base_dir}/ref/filtered_exomes_brca_500_1.txt"
+filename="${base_dir}/ref/BRCA.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/brca_slicer/data"
 output_dir="${base_dir}/"
@@ -17,7 +17,6 @@ MAX_NPROC=10
 # declarations
 region="range=7:38295938-38407399&range=7:142000817-142510993&range=9:33618203-33662661&range=14:22090036-23014042"
 cghub_key=`cat /mnt/oncogxA/Administration/TCGA/cghub.key`
-
 
 function queue {
     QUEUE="$QUEUE $1"
@@ -55,10 +54,6 @@ function bamslicer {
 	format="bam"
 	query_region="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&${region}"
 	query_unmapped="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&range=*"
-}
-
-function check_reference {
-	
 }
 
 function fastq_convert {
