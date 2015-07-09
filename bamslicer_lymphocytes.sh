@@ -75,9 +75,11 @@ function fastq_convert {
  	echo 'Overlap-Unmapped-count:' >> $bam_outpath/$name.summary.txt
  	samtools view -c $bam_outpath/$name.TCRreg.bam >> $bam_outpath/$name.summary.txt # unmapped-overlapping-count
  	wait
- 	samtools sort -n  $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCRreg.sorted
+ 	samtools sort $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCRreg.sorted
 	wait
-	bedtools bamtofastq -i $bam_outpath/$name.TCRreg.sorted.bam -fq $bam_outpath/$name.TCRreg.fastq
+	java -Xmx16g -jar /mnt/idash/Genomics/bin/picard-tools/MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT VERBOSITY=ERROR INPUT=$bam_outpath/$name.TCRreg.sorted.bam OUTPUT=$bam_outpath/$name.TCRreg.sorted.dedup.bam METRICS_FILE=$bam_outpath/$name.metrics.txt
+	wait
+	bedtools bamtofastq -i $bam_outpath/$name.TCRreg.sorted.dedup.bam -fq $bam_outpath/$name.TCRreg.fastq
 	wait
 	bgzip $bam_outpath/$name.TCRreg.fastq
 	wait
@@ -88,7 +90,7 @@ function fastq_convert {
 	# move back
 	mv $bam_outpath/$name.TCRreg.fastq.gz $outdir
 	mv $bam_outpath/$name.summary.txt $outdir
-	mv $bam_outpath/$name.TCRreg.sorted.bam $outdir
+#	mv $bam_outpath/$name.TCRreg.sorted.bam $outdir
 	wait
 
 	# clean up
