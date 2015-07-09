@@ -2,7 +2,7 @@
 
 workdir=$1
 CNT=1
-scriptsDir="/home/edlevy/scripts"
+scriptsDir="/home/edlevy/oncogx"
 #source ~/.bashrc
 for file in $workdir/*fastq.gz; do
 
