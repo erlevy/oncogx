@@ -12,8 +12,7 @@ outdir="/scratch/data/bamslicer/mitcr"
 for file in $workdir/*fastq.gz; do
 
   name=`basename $file ".TCRreg.fastq.gz"`
-  /usr/bin/mitcr ­pset flex $file $outdir/$name.txt &
-
+  mitcr -pset flex $file $outdir/$name.txt &
   
   if [ $(($CNT % 26)) -eq 0 ]; then
     echo "##DOING 26##"
