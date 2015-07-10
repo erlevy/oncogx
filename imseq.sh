@@ -10,12 +10,10 @@ workdir=$1
 CNT=1
 outdir="/scratch/data/bamslicer/imseq"
 datadir="/scratch/data/bamslicer/data"
-for file in $workdir/*fastq.gz; do
+for file in $workdir/*fastq; do
 
-  name=`basename $file ".TCRreg.fastq.gz"`
-  gzip -d $file
-  wait
-  ./imseq -ref Homo.Sapiens.TRB.fa -o $outdir/$name.tsv $datadir/$name.TCRreg.fastq &
+  name=`basename $file ".TCRreg.fastq"`
+  ./imseq -ref Homo.Sapiens.TRB.fa -o $outdir/$name.tsv $file &
   
   if [ $(($CNT % 26)) -eq 0 ]; then
     echo "##DOING 26##"
@@ -23,7 +21,5 @@ for file in $workdir/*fastq.gz; do
   fi
   
   let CNT+=1
-  
-  gzip $file
-  wait
+
 done
