@@ -12,7 +12,7 @@ outdir="/scratch/data/bamslicer/imseq"
 for file in $workdir/*fastq.gz; do
 
   name=`basename $file ".TCRreg.fastq.gz"`
-  imseq -ref segment-reference.fa -o $outdir/$name.tsv $file
+  ./imseq -ref segment-reference.fa -o $outdir/$name.tsv $file &
   
   if [ $(($CNT % 26)) -eq 0 ]; then
     echo "##DOING 26##"
