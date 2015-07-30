@@ -70,11 +70,15 @@ wait
 	
 samtools view -b -f 4 $bam_inpath/$name.bam > $bam_outpath/$name.unmapped.bam
 wait
-samtools index $bam_outpath/$name.TCR.bam
+samtools sort $bam_outpath/$name.TCR.bam $bam_outpath/$name.TCR.sorted
 wait
-samtools index $bam_outpath/$name.unmapped.bam
+samtools index $bam_outpath/$name.TCR.sorted.bam
 wait
-samtools merge $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCR.bam $bam_outpath/$name.unmapped.bam
+samtools sort $bam_outpath/$name.unmapped.bam $bam_outpath/$name.unmapped.sorted
+wait
+samtools index $bam_outpath/$name.unmapped.sorted.bam
+wait
+samtools merge $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCR.sorted.bam $bam_outpath/$name.unmapped.sorted.bam
 wait
 echo 'Overlap-Unmapped-count:' >> $bam_outpath/$name.summary.txt
 samtools view -c $bam_outpath/$name.TCRreg.bam >> $bam_outpath/$name.summary.txt # unmapped-overlapping-count

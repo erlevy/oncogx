@@ -3,10 +3,10 @@
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
-filename='/scratch/data/brca_slicer/ref/filtered_exomes_brca_25.txt'
+filename='/scratch/data/brca_rna/ref/filtered_rna_brca_5.txt'
 filelines=`cat $filename`
-data_dir='/scratch/data/brca_slicer/data'
-output_dir='/scratch/data/brca_slicer/'
+data_dir='/scratch/data/brca_rna/data'
+output_dir='/scratch/data/brca_rna/'
 NUM=0
 QUEUE=""
 MAX_NPROC=10
