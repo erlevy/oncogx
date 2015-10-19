@@ -4,7 +4,7 @@
 ## For more processes change the max_jobs variable
 
 base_dir="/scratch/data/bamslicer_exomes"
-filename="${base_dir}/ref/BRCA.txt"
+filename="${base_dir}/ref/exome_10_test.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/data"
 output_dir="${base_dir}/"
@@ -54,6 +54,12 @@ function bamslicer {
 	exome_id=$1
 	ref=$2
 	format="bam"
+	if [ $req -eq "HG19"]
+	then
+		$region=$region_19
+	else
+		$region=$region_37
+	fi
 	query_region="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&${region}"
 	query_unmapped="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&range=*"
 	query_index="${URL}/${exome_id}/${exome_id}.bam.bai"
@@ -107,7 +113,8 @@ function main {
 #	local time_start=$(date +%s)
 #	echo "Download start: " >> ${output_dir}/log.txt
 #	echo $(date) >> ${output_dir}/log.txt
-	fastq_convert $1 $2 &
+#	fastq_convert $1 $2 &
+	echo bamslicer $name $reference
 #	wait
 #	local download_end=$(date +%s)
 #    local time_download=$(echo "$download_end - $time_start" | bc)
