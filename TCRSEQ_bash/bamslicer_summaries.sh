@@ -70,6 +70,8 @@ function fastq_convert {
  	wait
  	samtools index $bam_outpath/$name.unmapped.bam
  	wait
+	samtools idxstats $bam_outpath/${name}.unmapped.bam > ${summary_dir}/${name}.txt
+	wait
  	samtools merge $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCR.bam $bam_outpath/$name.unmapped.bam
  	wait
  	echo 'Overlap-Unmapped-count:' >> $bam_outpath/$name.summary.txt
@@ -100,13 +102,7 @@ function fastq_convert {
 function main {
 	name=$1
 	bamslicer $name
-	curl -s "$query_unmapped" -u ":${cghub_key}" > $bam_outpath/${name}.bam
-	wait
-	curl -s "$query_index" -u ":${cghub_key}" > $bam_outpath/${name}.bam.bai
-	wait
-	samtools idxstats $bam_outpath/${name}.bam > ${summary_dir}/${name}.txt
-	wait
-	rm $bam_outpath/$name*
+
 }
 
 # Main program

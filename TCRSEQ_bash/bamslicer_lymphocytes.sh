@@ -3,20 +3,21 @@
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
-base_dir="/scratch/data/brca_rna"
+base_dir="/scratch/data/bamslicer_exomes"
 filename="${base_dir}/ref/BRCA.txt"
 filelines=`cat $filename`
-data_dir="${base_dir}/brca_slicer/data"
+data_dir="${base_dir}/data"
 output_dir="${base_dir}/"
 outdir="${base_dir}/data"
+summary_dir="${base_dir}/summaries"
 bam_outpath="/scratch"
 NUM=0
 QUEUE=""
 MAX_NPROC=10
 
 # declarations
-#region="range=7:38295938-38407399&range=7:142000817-142510993&range=9:33618203-33662661&range=14:22090036-23014042"
-region="range=chr7:38295938-38407399&range=chr7:142000817-142510993&range=chr9:33618203-33662661&range=chr14:22090036-23014042"
+region_19="range=chr7:38295938-38407399&range=chr7:142000817-142510993&range=chr9:33618203-33662661&range=chr14:22090036-23014042"
+region_37="range=7:38295938-38407399&range=7:142000817-142510993&range=9:33618203-33662661&range=14:22090036-23014042"
 cghub_key=`cat /mnt/oncogxA/Administration/TCGA/cghub.key`
 
 function queue {
@@ -51,15 +52,17 @@ function checkqueue {
 function bamslicer {
 	URL="https://slicer.cghub.ucsc.edu/analyses"
 	exome_id=$1
-	ref="HG19"
+	ref=$2
 	format="bam"
 	query_region="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&${region}"
 	query_unmapped="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&range=*"
+	query_index="${URL}/${exome_id}/${exome_id}.bam.bai"
 }
 
 function fastq_convert {
 	name=$1
-	bamslicer $name
+	reference=$2
+	bamslicer $name $reference
 	local time_start=$(date +%s)
 	curl -s "$query_region" -u ":${cghub_key}" > $bam_outpath/${name}.TCR.bam
 	wait
@@ -67,13 +70,11 @@ function fastq_convert {
 	wait
 	local download_end=$(date +%s)
     local time_download=$(echo "$download_end - $time_start" | bc)
- 	samtools sort $bam_outpath/$name.TCR.bam $bam_outpath/$name.TCR.sorted
-	wait
-	samtools index $bam_outpath/$name.TCR.sorted.bam
-	wait
-	samtools sort $bam_outpath/$name.unmapped.bam $bam_outpath/$name.unmapped.sorted
-	wait
-	samtools index $bam_outpath/$name.unmapped.sorted.bam
+ 	samtools index $bam_outpath/$name.TCR.bam
+ 	wait
+ 	samtools index $bam_outpath/$name.unmapped.bam
+ 	wait
+	samtools idxstats $bam_outpath/${name}.bam > ${summary_dir}/${name}.txt
 	wait
  	samtools merge $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCR.bam $bam_outpath/$name.unmapped.bam
  	wait
