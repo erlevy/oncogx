@@ -60,6 +60,7 @@ echo $bam_align
 
 if [ "$bam_align" == "hg19" ] ; then
 	samtools view -b -F 4 $bam_inpath/$name.bam chr7:38295938-38407399 chr7:142000817-142510993 chr9:33618203-33662661 chr14:22090036-23014042 > $bam_outpath/$name.TCR.bam
+#	samtools view -b -F 4 $bam_inpath/$name.bam chr7:142000817-142510993 > $bam_outpath/$name.TCR.bam
 	wait
 fi
 if [ "$bam_align" == "grch37" ] ; then

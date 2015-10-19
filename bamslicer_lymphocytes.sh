@@ -3,7 +3,7 @@
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
-base_dir="/scratch/data/bamslicer"
+base_dir="/scratch/data/brca_rna"
 filename="${base_dir}/ref/BRCA.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/brca_slicer/data"
@@ -15,7 +15,8 @@ QUEUE=""
 MAX_NPROC=10
 
 # declarations
-region="range=7:38295938-38407399&range=7:142000817-142510993&range=9:33618203-33662661&range=14:22090036-23014042"
+#region="range=7:38295938-38407399&range=7:142000817-142510993&range=9:33618203-33662661&range=14:22090036-23014042"
+region="range=chr7:38295938-38407399&range=chr7:142000817-142510993&range=chr9:33618203-33662661&range=chr14:22090036-23014042"
 cghub_key=`cat /mnt/oncogxA/Administration/TCGA/cghub.key`
 
 function queue {
@@ -50,7 +51,7 @@ function checkqueue {
 function bamslicer {
 	URL="https://slicer.cghub.ucsc.edu/analyses"
 	exome_id=$1
-	ref="GRCh37-lite"
+	ref="HG19"
 	format="bam"
 	query_region="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&${region}"
 	query_unmapped="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&range=*"
@@ -66,10 +67,14 @@ function fastq_convert {
 	wait
 	local download_end=$(date +%s)
     local time_download=$(echo "$download_end - $time_start" | bc)
- 	samtools index $bam_outpath/$name.TCR.bam
- 	wait
- 	samtools index $bam_outpath/$name.unmapped.bam
- 	wait
+ 	samtools sort $bam_outpath/$name.TCR.bam $bam_outpath/$name.TCR.sorted
+	wait
+	samtools index $bam_outpath/$name.TCR.sorted.bam
+	wait
+	samtools sort $bam_outpath/$name.unmapped.bam $bam_outpath/$name.unmapped.sorted
+	wait
+	samtools index $bam_outpath/$name.unmapped.sorted.bam
+	wait
  	samtools merge $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCR.bam $bam_outpath/$name.unmapped.bam
  	wait
  	echo 'Overlap-Unmapped-count:' >> $bam_outpath/$name.summary.txt

@@ -3,7 +3,7 @@
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
-base_dir="/scratch/data/bamslicer"
+base_dir="/scratch/data/brca_rna"
 filename="${base_dir}/ref/BRCA.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/brca_slicer/data"
@@ -13,7 +13,7 @@ summary_dir="${base_dir}/summaries"
 bam_outpath="/scratch"
 NUM=0
 QUEUE=""
-MAX_NPROC=3
+MAX_NPROC=5
 
 # declarations
 region="1:1000000-1001000"
@@ -51,7 +51,7 @@ function checkqueue {
 function bamslicer {
 	URL="https://slicer.cghub.ucsc.edu/analyses"
 	exome_id=$1
-	ref="GRCh37-lite"
+	ref="HG19"
 	format="bam"
 	query_unmapped="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&range=*"
 	query_index="${URL}/${exome_id}/${exome_id}.bam.bai"
