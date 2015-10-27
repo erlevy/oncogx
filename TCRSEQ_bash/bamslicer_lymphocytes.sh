@@ -4,7 +4,7 @@
 ## For more processes change the max_jobs variable
 
 base_dir="/scratch/data/bamslicer_exomes"
-filename="${base_dir}/ref/exome_100_test.txt"
+filename="${base_dir}/ref/exome_100_broad.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/data"
 output_dir="${base_dir}/"
@@ -65,6 +65,17 @@ function bamslicer {
 	query_index="${URL}/${exome_id}/${exome_id}.bam.bai"
 }
 
+function check_unmapped {
+	name=$1
+	idxstats=`samtools idxstats $bam_outpath/$name.unmapped.bam | head -n 1 | cut -f3`
+	if [ $idxstats -ne 0 ]
+		then
+			mv $bam_outpath/$name.unmapped.bam $bam_outpath/$name.full.bam
+			samtools view -b -f 4 $bam_outpath/$name.full.bam > $bam_outpath/$name.unmapped.bam
+			samtools index $bam_outpath/$name.unmapped.bam
+	fi
+}
+
 function fastq_convert {
 	name=$1
 	reference=$2
@@ -76,12 +87,18 @@ function fastq_convert {
 	wait
 	local download_end=$(date +%s)
     local time_download=$(echo "$download_end - $time_start" | bc)
+    curl -s "$query_index" -u ":${cghub_key}" > $bam_outpath/${name}.unmapped.bam.bai
+	wait
+	samtools idxstats $bam_outpath/${name}.unmapped.bam > ${summary_dir}/${name}.txt
+	wait
+	rm $bam_outpath/${name}.unmapped.bam.bai
+	wait
  	samtools index $bam_outpath/$name.TCR.bam
  	wait
  	samtools index $bam_outpath/$name.unmapped.bam
  	wait
-	samtools idxstats $bam_outpath/${name}.unmapped.bam > ${summary_dir}/${name}.txt
-	wait
+ 	if [ $reference == "HG19_Broad_variant" ] ; then check_unmapped $name ; fi
+ 	wait
  	samtools merge $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCR.bam $bam_outpath/$name.unmapped.bam
  	wait
  	echo 'Overlap-Unmapped-count:' >> $bam_outpath/$name.summary.txt
