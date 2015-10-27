@@ -3,7 +3,7 @@
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
-base_dir="/scratch/data/brca_rna"
+base_dir="/scratch/data/bamslicer"
 filename="${base_dir}/ref/BRCA.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/brca_slicer/data"
@@ -13,7 +13,7 @@ summary_dir="${base_dir}/summaries"
 bam_outpath="/scratch"
 NUM=0
 QUEUE=""
-MAX_NPROC=5
+MAX_NPROC=3
 
 # declarations
 region="1:1000000-1001000"
@@ -51,7 +51,7 @@ function checkqueue {
 function bamslicer {
 	URL="https://slicer.cghub.ucsc.edu/analyses"
 	exome_id=$1
-	ref="HG19"
+	ref="GRCh37-lite"
 	format="bam"
 	query_unmapped="${URL}/${exome_id}/slices?ref=${ref}&format=${format}&range=*"
 	query_index="${URL}/${exome_id}/${exome_id}.bam.bai"
@@ -70,8 +70,6 @@ function fastq_convert {
  	wait
  	samtools index $bam_outpath/$name.unmapped.bam
  	wait
-	samtools idxstats $bam_outpath/${name}.unmapped.bam > ${summary_dir}/${name}.txt
-	wait
  	samtools merge $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCR.bam $bam_outpath/$name.unmapped.bam
  	wait
  	echo 'Overlap-Unmapped-count:' >> $bam_outpath/$name.summary.txt
@@ -102,7 +100,13 @@ function fastq_convert {
 function main {
 	name=$1
 	bamslicer $name
-
+	curl -s "$query_unmapped" -u ":${cghub_key}" > $bam_outpath/${name}.bam
+	wait
+	curl -s "$query_index" -u ":${cghub_key}" > $bam_outpath/${name}.bam.bai
+	wait
+	samtools idxstats $bam_outpath/${name}.bam > ${summary_dir}/${name}.txt
+	wait
+	rm $bam_outpath/$name*
 }
 
 # Main program
