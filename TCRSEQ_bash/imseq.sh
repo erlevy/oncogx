@@ -8,7 +8,7 @@
 
 workdir=$1
 CNT=1
-outdir="/scratch/data/brca_rna/imseq"
+outdir="/scratch/data/bamslicer_exomes/imseq"
 for file in $workdir/*fastq; do
 
   name=`basename $file ".TCRreg.fastq"`
