@@ -4,7 +4,7 @@
 ## For more processes change the max_jobs variable
 
 base_dir="/scratch/data/bamslicer_exomes"
-filename="${base_dir}/ref/exome_100_broad.txt"
+filename="${base_dir}/ref/all_exomes_1.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/data"
 output_dir="${base_dir}/"
