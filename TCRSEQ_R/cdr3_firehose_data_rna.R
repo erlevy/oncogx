@@ -2,10 +2,23 @@ library(OIsurv)
 library(cgdsr)
 library(GSVA)
 
-expression <- read.csv("tcga/expression/raw/Firehose/BRCA_normalized.csv")
-#expression <- read.csv("BRCA_expression_firehose_patient_ids.csv")
-#cdr3 <- read.csv("cdr3_results_with_groups.txt", sep="\t")
-cdr3 <- read.csv("cdr3_results_with_expression_blood_ptprc_burden_purity_1078.txt", sep="\t")
+#expression <- read.csv("tcga/expression/raw/Firehose/BRCA_normalized.csv")
+expression <- read.csv("BRCA_expression_firehose_patient_ids.csv")
+cdr3 <- read.csv("cdr3_results_with_groups.txt", sep="\t")
+
+# put rna groups
+rna_freq <- cdr3$rna_imseq/cdr3$rna_reads
+rna_med <- median(rna_freq)
+rna_group <- c()
+for (i in 1:length(rna_freq))
+{
+  rna_patient <- rna_freq[i]
+  if (rna_patient == 0) {rna_group[i] <- "low"}
+  else if (rna_patient < rna_med) {rna_group[i] <- "low"}
+  else {rna_group[i] <- "high"}
+}
+
+cdr3 <- cbind(cdr3, rna_group)
 
 # tutorial
 p <- 20000 ## number of genes
@@ -55,7 +68,7 @@ eos <- cibersort$genes[which(cibersort$Eosinophils==1)]
 neut <- cibersort$genes[which(cibersort$Neutrophils==1)]
 all_signatures <- list(tregs, tcd8, tcd4n, tcd4mr, tcd4ma, tcfh, tcgd, bcn, bcm, pc, nkr,
                        nka, mono, macro0, macro1, macro2, denr, dena, mastr, masta, eos, neut)
-all_signature_names <- c("T-regs", "T-CD8d", "T-CD4n", "T-CD4mr", "T-CD4ma", "T-hf", "T-gd", "B-n", "B-m", "Plasma",
+all_signature_names <- c("T regs", "T-CD8d", "T-CD4n", "T-CD4mr", "T-CD4ma", "T-hf", "T-gd", "B-n", "B-m", "Plasma",
                          "NK-r", "NK-a", "Mono", "Macro-0", "Macro-1", "Macro-2", "Den-r", "Den-a", "Mast-r", "Mast-a",
                          "Eos", "Neut")
 names(all_signatures) <- all_signature_names
@@ -92,22 +105,22 @@ par(mfrow=c(1,1))
 # add gsva results to cdr3 results table
 es.dif_col <- c()
 es.dif_all <- gsub(".", "-", colnames(es.dif), fixed=TRUE)
-es.dif_all <- substr(es.dif_all,1,16)
-#es.dif_all <- gsub("X", "", es.dif_all, fixed=TRUE)
+es.dif_all <- gsub("X", "", es.dif_all, fixed=TRUE)
 for (i in 1:nrow(cdr3))
 {
-  sample_id <- substr(as.character(cdr3$sample_id[i]),1,16)
-  es.dif_index <- which(sample_id==es.dif_all)
-  if (length(es.dif_index)>0)
-  {
-    es.dif_value <- es.dif[,es.dif_index]
-    es.dif_col <- rbind(es.dif_col, es.dif_value)
-  }
-  else
-  {
-    es.dif_col <- rbind(es.dif_col, rep(NA, 22))
-  }
+ rna <- as.character(cdr3$patient_id[i])
+ es.dif_index <- which(rna==es.dif_all)
+ if (length(es.dif_index)>0)
+ {
+   es.dif_value <- es.dif[,es.dif_index]
+   es.dif_col <- rbind(es.dif_col, es.dif_value)
+ }
+ else
+ {
+   es.dif_col <- rbind(es.dif_col, rep(NA, 22))
+ }
 }
 rownames(es.dif_col) <- seq(1,nrow(cdr3))
 cdr3_new <- cbind(cdr3, es.dif_col)
-write.csv(cdr3_new, "cdr3_results_with_expression_blood_ptprc_burden_purity_gsva_1078.txt", quote=FALSE, row.names=FALSE)
+cdr3_new <- na.omit(cdr3_new)
+write.csv(cdr3_new, "cdr3_results_rna_with_gsva.csv", quote=FALSE, row.names=FALSE)

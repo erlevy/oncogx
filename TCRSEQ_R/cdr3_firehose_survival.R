@@ -5,6 +5,7 @@ library(cgdsr)
 results <- read.csv("cdr3_results_with_gsva.csv")
 #results <- results[,-c(15:17)]  # remove the er, pr, her2
 results <- results[complete.cases(results),]
+clinical_group <- results$clinical_group
 exome_freq <- as.numeric(results$exome_imseq)/as.numeric(results$exome_reads)
 rna_freq <- as.numeric(results$rna_imseq)/as.numeric(results$rna_reads)
 treg_sig <- results$T.regs
