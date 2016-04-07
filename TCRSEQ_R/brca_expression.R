@@ -7,7 +7,7 @@ library(heatmap.plus)
 
 #results <- read.csv("cdr3_results_with_groups_complete.txt", sep="\t")
 #results <- read.csv("cdr3_results_with_expression.txt", sep="\t")
-results <- read.csv("cdr3_results_with_blood_1078.txt", sep="\t")
+results <- read.csv("/Users/Eric/cdr3_results_with_blood_1078.txt", sep="\t")
 idxstats <- "/Users/Eric/tcga/clonotypes/final/rna_idxstats/"
 
 exome_rpm <- as.numeric(results$exome_imseq)/as.numeric(results$exome_reads)*1000000
@@ -112,12 +112,12 @@ surv <- hr_positive[,c("cdr3_nonzero", "days", "vital")]
 surv$days <- surv$days/365
 my.surv <- Surv(as.numeric(surv[,2]), as.numeric(surv[,3]))
 my.fit <- survfit(my.surv ~ surv[,1])
-plot(my.fit, col=c(1,2), main="Survival of HR+ by CDR3 groups", xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
+plot(my.fit, col=c(1,2), xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
      cex.axis=1.75, cex.lab=2.25, cex.main=1.75, lwd=4, cex=2) 
 #legend(x="bottomleft", c("nonzero", "zero"), fill=c(1,2), cex=2, bty="n")
 legend(x="bottomleft", c("iDNA>0", "iDNA=0"), fill=c(1,2), cex=2, bty="n")
 survdiff(my.surv ~ surv[,1]) # p=0.412, n=433, events=20
-text(x=9.25, y=0.95, labels="p=0.412", cex=2)
+text(x=9.25, y=0.95, labels="p=0.415", cex=2) # changed text to HR p-value
 dev.off()
 cox.fit <- coxph(my.surv ~ surv[,1])
 summary(cox.fit)
@@ -131,12 +131,12 @@ surv <- her2_positive[,c("cdr3_nonzero", "days", "vital")]
 surv$days <- surv$days/365
 my.surv <- Surv(as.numeric(surv[,2]), as.numeric(surv[,3]))
 my.fit <- survfit(my.surv ~ surv[,1])
-plot(my.fit, col=c(1,2), main="Survival of HER2+ by CDR3 groups", xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
+plot(my.fit, col=c(1,2), xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
      cex.axis=1.75, cex.lab=2.25, cex.main=1.75, lwd=4, cex=2) 
 #legend(x="bottomleft", c("nonzero", "zero"), fill=c(1,2), cex=2, bty="n")
 legend(x="bottomleft", c("iDNA>0", "iDNA=0"), fill=c(1,2), cex=2, bty="n")
 survdiff(my.surv ~ surv[,1]) # p=0.016, n=157, events=18
-text(x=9.5, y=0.95, labels="p=0.016", cex=2)
+text(x=9.5, y=0.95, labels="p=0.022", cex=2)
 dev.off()
 cox.fit <- coxph(my.surv ~ surv[,1])
 summary(cox.fit)
@@ -150,12 +150,12 @@ surv <- tnbc[,c("cdr3_nonzero", "days", "vital")]
 surv$days <- surv$days/365
 my.surv <- Surv(as.numeric(surv[,2]), as.numeric(surv[,3]))
 my.fit <- survfit(my.surv ~ surv[,1])
-plot(my.fit, col=c(1,2), main="Survival of TNBC by CDR3 groups", xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
+plot(my.fit, col=c(1,2), xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
      cex.axis=1.75, cex.lab=2.25, cex.main=1.75, lwd=4, cex=2) 
 #legend(x="bottomleft", c("nonzero", "zero"), fill=c(1,2), cex=2, bty="n")
 legend(x="bottomleft", c("iDNA>0", "iDNA=0"), fill=c(1,2), cex=2, bty="n")
 survdiff(my.surv ~ surv[,1]) # p=0.057, n=114, events=13
-text(x=9.5, y=0.95, labels="p=0.057", cex=2)
+text(x=9.5, y=0.95, labels="p=0.071", cex=2)
 dev.off()
 cox.fit <- coxph(my.surv ~ surv[,1])
 summary(cox.fit)
@@ -170,7 +170,7 @@ surv <- hr_positive[,c("lymphocyte_presence", "days", "vital")]
 surv$days <- surv$days/365
 my.surv <- Surv(as.numeric(surv[,2]), as.numeric(surv[,3]))
 my.fit <- survfit(my.surv ~ surv[,1])
-plot(my.fit, col=c(2,1), main="Survival of HR+ by lymphocyte groups", xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
+plot(my.fit, col=c(2,1), xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
      cex.axis=1.75, cex.lab=2.25, cex.main=1.75, lwd=4, cex=2) 
 legend(x="bottomleft", c("TIL high", "TIL low"), fill=c(1,2), cex=2, bty="n")
 survdiff(my.surv ~ surv[,1]) # p=0.947
@@ -188,11 +188,11 @@ surv <- her2_positive[,c("lymphocyte_presence", "days", "vital")]
 surv$days <- surv$days/365
 my.surv <- Surv(as.numeric(surv[,2]), as.numeric(surv[,3]))
 my.fit <- survfit(my.surv ~ surv[,1])
-plot(my.fit, col=c(2,1), main="Survival of HER2+ by lymphocyte groups", xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
+plot(my.fit, col=c(2,1), xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
      cex.axis=1.75, cex.lab=2.25, cex.main=1.75, lwd=4, cex=2) 
 legend(x="bottomleft", c("TIL high", "TIL low"), fill=c(1,2), cex=2, bty="n")
 survdiff(my.surv ~ surv[,1]) # p=0.166
-text(x=9.5, y=0.95, labels="p=0.166", cex=2)
+text(x=9.5, y=0.95, labels="p=0.176", cex=2)
 dev.off()
 cox.fit <- coxph(my.surv ~ surv[,1])
 summary(cox.fit)
@@ -206,7 +206,7 @@ surv <- tnbc[,c("lymphocyte_presence", "days", "vital")]
 surv$days <- surv$days/365
 my.surv <- Surv(as.numeric(surv[,2]), as.numeric(surv[,3]))
 my.fit <- survfit(my.surv ~ surv[,1])
-plot(my.fit, col=c(2,1), main="Survival of TNBC by lymphocyte groups", xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
+plot(my.fit, col=c(2,1), xlab="Survival Time (years)", ylab="Survival Probability", xlim=c(0,11),
      cex.axis=1.75, cex.lab=2.25, cex.main=1.75, lwd=4, cex=2) 
 legend(x="bottomleft", c("TIL high", "TIL low"), fill=c(1,2), cex=2, bty="n")
 survdiff(my.surv ~ surv[,1]) # p=0.805

@@ -10,6 +10,7 @@ library(MASS)
 library(leaps)
 library(relaimpo)
 library(dplyr)
+library(RColorBrewer)
 
 ### January 29, 2016 ###
 # Purpose is to generate final tables and figures for the BRCA TCRSEQ paper
@@ -17,7 +18,8 @@ library(dplyr)
 
 # Input: final results table to be used in paper
 #results <- read.csv("cdr3_results_with_expression_blood_ptprc_1078.txt", sep="\t")
-results <- read.csv("cdr3_results_with_expression_blood_ptprc_burden_purity_gsva_clustering_age_dedup_1078.txt", sep="\t")
+#results <- read.csv("/Users/Eric/cdr3_results_with_expression_blood_ptprc_burden_purity_gsva_clustering_age_dedup_1078.txt", sep="\t")
+results <- read.csv("/Users/Eric/cdr3_results_with_expression_blood_ptprc_burden_purity_gsva_clustering_four_groups_1078.txt", sep="\t")
 # Contains: patient and sample information, exome and rna imseq information, lymphocyte, clinical, groupings,
 # and the GSVA scores for the LM22 signature
 
@@ -133,6 +135,7 @@ for (i in 1:nrow(results))
       if (nucleotide==shared) {tumor_shared[i] <- 1}
       aa <- imseq_reads[j,11]
       imseq_match <- which(imseq[,1]==nucleotide)
+#      imseq_match <- which(imseq[,2]==aa)
       if (length(imseq_match)==0)
       {
         imseq <- rbind(imseq, c(nucleotide, aa, "1"))
@@ -146,6 +149,7 @@ for (i in 1:nrow(results))
 }
 imseq_tumor <- imseq
 #write.table(imseq, "repeated_clonotypes_tumor_1078.txt", quote=FALSE, row.names=FALSE, col.names=TRUE, sep="\t")
+#write.table(imseq, "repeated_clonotypes_tumor_by_aa_1078.txt", quote=FALSE, row.names=FALSE, col.names=TRUE, sep="\t")
 
 # get shared clonotypes in the rna samples
 shared <- "TGTGCCACCAGCAGAGACACAGAGCTGCAGTGCTTCCTGCTCTCTGTTCATAAACCTCATTGTTTCCCAGATCCAGGTGCTTTCTCT"
@@ -239,6 +243,8 @@ ggplotColours <- function(n=6, h=c(0, 360) +15){
   hcl(h = (seq(h[1], h[2], length = n)), c = 100, l = 65)
 }
 
+brewer.pal(4, "YlOrRd")
+
 for (i in 1:nrow(col_mat))
 {
   exome <- results_clustering$exome_imseq[i]
@@ -246,17 +252,17 @@ for (i in 1:nrow(col_mat))
 #  cluster_patient <- results_clustering$mycl[i]
   if (exome==0) {col_mat[i,2]="white"}
   else {col_mat[i,2]="black"}
-  if (cluster_patient==1) {col_mat[i,4]="#619CFF"}
-  else if (cluster_patient==2) {col_mat[i,4]="#F8766D"}
-  else if (cluster_patient==3) {col_mat[i,4]="#00BA38"}
-  else if (cluster_patient==4) {col_mat[i,4]="grey"}
+  if (cluster_patient==1) {col_mat[i,4]="#FECC5C"}  # middle/innate
+  else if (cluster_patient==2) {col_mat[i,4]="#FD8D3C"} # middle/adaptive
+  else if (cluster_patient==3) {col_mat[i,4]="#E31A1C"} # high
+  else if (cluster_patient==4) {col_mat[i,4]="#FFFFB2"}  # low
 }
 
 col_mat[,2] <- col_mat[,4]
 col_mat[,3] <- col_mat[,4]
 col_mat[1072,1] <- NA
 
-signatures <- results_clustering[,37:58] # new cdr3_results with dedup
+signatures <- results_clustering[,50:71] # new cdr3_results with dedup
 rownames(signatures) <- results_clustering[,1]
 signatures <- scale(signatures)
 
@@ -267,7 +273,7 @@ signature_cols <- c("T Regs", "T CD8", "T CD4 Naive", "T CD4 Mem. Resting", "T C
                     "Eosinophils", "Neutrophils")
 
 heatmap.plus(as.matrix(signatures), col=bluered(51), RowSideColors=col_mat, scale="none",
-             Colv=NA, labRow="", cexCol=2.25, margins=c(30,8), labCol=signature_cols)
+             Colv=NA, labRow="", cexCol=4.5, margins=c(36,6), labCol=signature_cols)
 
 exome_rpm <- (results$exome_imseq/results$exome_reads)*1000000
 rna_rpm <- (results$rna_imseq/results$rna_reads)*1000000

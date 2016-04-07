@@ -11,9 +11,9 @@ file_exome <- list.files(path=exome_dir, pattern="*.tsv", full.names=T, recursiv
 file_rna <- list.files(path=rna_dir, pattern="*.tsv", full.names=T, recursive=FALSE)
 file_blood <- list.files(path=blood_dir, pattern="*.tsv", full.names=T, recursive=FALSE)
 
-results <- read.csv("cdr3_results_with_expression_blood_ptprc_1078.txt", sep="\t")
+results <- read.csv("/Users/Eric/cdr3_results_with_expression_blood_ptprc_1078.txt", sep="\t")
 
-clonotypes_all <- matrix(nrow=0, ncol=5)
+clonotypes_all <- matrix(nrow=0, ncol=6)
 clonotypes_exome <- matrix(nrow=0, ncol=6)
 colnames(clonotypes_all) <- c("clonotype", "patient_id", "blood", "rna", "exome")
 exome_clonotypes <- c()
@@ -21,7 +21,7 @@ rna_clonotypes <- c()
 blood_clonotypes <- c()
 for (i in 1:nrow(results))
 {
-  clonotypes_patient <- matrix(nrow=0, ncol=5)
+  clonotypes_patient <- matrix(nrow=0, ncol=6)
   clonotypes_exome_patient <- matrix(nrow=0, ncol=6)
   exome_reads <- matrix(nrow=0, ncol=11)
   exome_file <- paste(results$exome_id[i], ".tsv", sep="")
@@ -50,7 +50,7 @@ for (i in 1:nrow(results))
       right_match <- exome_reads[j,7]
       if (length(match)==0) 
       {
-        clonotypes_patient <- rbind(clonotypes_patient, c(cl, as.character(results$patient_id[i]), 0, 0, 1))
+        clonotypes_patient <- rbind(clonotypes_patient, c(cl, as.character(results$patient_id[i]), 0, 0, 1, aa))
         clonotypes_exome_patient <- rbind(clonotypes_exome_patient, c(cl, aa, as.character(substr(results$sample_id[i], 1, 16)), 1, left_match, right_match))
       } else 
       {
@@ -66,8 +66,9 @@ for (i in 1:nrow(results))
     for (j in 1:nrow(rna_reads))
     {
       cl <- rna_reads[j,10]
+      aa <- rna_reads[j,11]
       match <- which(clonotypes_patient[,1]==cl)
-      if (length(match)==0) {clonotypes_patient <- rbind(clonotypes_patient, c(cl, as.character(results$patient_id[i]), 0, 1, 0))  }
+      if (length(match)==0) {clonotypes_patient <- rbind(clonotypes_patient, c(cl, as.character(results$patient_id[i]), 0, 1, 0, aa))  }
       else {clonotypes_patient[match,4] <- as.character(as.numeric(clonotypes_patient[match,4]) + 1)}
     }    
   }
@@ -77,8 +78,9 @@ for (i in 1:nrow(results))
     for (j in 1:nrow(blood_reads))
     {
       cl <- blood_reads[j,10]
+      aa <- blood_reads[j,11]
       match <- which(clonotypes_patient[,1]==cl)
-      if (length(match)==0) {clonotypes_patient <- rbind(clonotypes_patient, c(cl, as.character(results$patient_id[i]), 1, 0, 0))  }
+      if (length(match)==0) {clonotypes_patient <- rbind(clonotypes_patient, c(cl, as.character(results$patient_id[i]), 1, 0, 0, aa))  }
       else {clonotypes_patient[match,3] <- as.character(as.numeric(clonotypes_patient[match,3]) + 1)}
     }    
   }
@@ -89,7 +91,7 @@ for (i in 1:nrow(results))
   clonotypes_exome <- rbind(clonotypes_exome, clonotypes_exome_patient)
 }
 
-write.table(clonotypes_all, "clonotypes_all.txt", sep="\t", quote=FALSE, row.names=FALSE)
+write.table(clonotypes_all, "clonotypes_all_with_aa.txt", sep="\t", quote=FALSE, row.names=FALSE)
 write.table(clonotypes_exome, "clonotypes_exome.txt", sep="\t", quote=FALSE, row.names=FALSE)
 
 clonotypes_small <- clonotypes_all[,c(2,4)]
