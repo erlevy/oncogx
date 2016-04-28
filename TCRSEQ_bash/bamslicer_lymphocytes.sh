@@ -3,8 +3,8 @@
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
-base_dir="/scratch/data/bamslicer_pancancer_test"
-filename="${base_dir}/ref/exome_100_test.txt"
+base_dir="/scratch/data/pancancer_exome/"
+filename="${base_dir}/ref/pancancer_exome_ref_1.txt "
 filelines=`cat $filename`
 data_dir="${base_dir}/data"
 output_dir="${base_dir}/"
