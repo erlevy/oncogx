@@ -1,10 +1,10 @@
 #!/bin/bash
-## Script to download and slice files
+## Script to download and slice files, and run IMSEQ on them
 ## Supports N processes at the same time
 ## For more processes change the max_jobs variable
 
 base_dir="/scratch/data/pancancer_exome"
-filename="${base_dir}/ref/pancancer_exome_ref_1.txt "
+filename="${base_dir}/ref/exome_5_test.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/data"
 output_dir="${base_dir}/"
@@ -119,14 +119,16 @@ function fastq_convert {
  	wait
  	bedtools bamtofastq -i $bam_outpath/$name.TCRreg.sorted.dedup.bam -fq $bam_outpath/$name.TCRreg.fastq
  	wait
- 	bgzip $bam_outpath/$name.TCRreg.fastq
+ 	cd /home/edlevy/imseq_1.0.1-linux64
+ 	./imseq -ref Homo.Sapiens.TRB.fa -o $bam_outpath/$name.tsv $bam_outpath/$name.TCRreg.fastq
  	wait
  	local slice_end=$(date +%s)
  	local time_slice=$(echo "$slice_end - $download_end" | bc)
  	echo "$1	$time_download	$time_slice" >> ${output_dir}/summary.txt
  
  	# move back
- 	mv $bam_outpath/$name.TCRreg.fastq.gz $outdir
+# 	mv $bam_outpath/$name.TCRreg.fastq.gz $outdir
+ 	mv $bam_outpath/$name.tsv $base_dir/imseq
 # 	mv $bam_outpath/$name.summary.txt $outdir
 #	mv $bam_outpath/$name.TCRreg.sorted.bam $outdir
 #	mv $bam_outpath/${name}.TCR.sorted.bam ${base_dir}/mapped
