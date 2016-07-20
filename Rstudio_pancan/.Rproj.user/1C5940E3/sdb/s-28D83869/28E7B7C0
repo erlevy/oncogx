@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(dplyr)\n\nclonotypes <- read.csv(\"/Users/Eric/tcrseq/new/processed/pancan_clonotypes_all_7-14-2016.txt\", sep=\"\\t\")\n\nclonotypes$clonotype <- as.character(clonotypes$clonotype)\nclonotypes$patient_id <- as.character(clonotypes$patient_id)\nclonotypes$aa <- as.character(clonotypes$aa)\n\n# compare exome and blood\nexome_pos_blood_pos <- filter(clonotypes, blood > 0 & exome > 0)\nexome_neg_blood_pos <- filter(clonotypes, blood > 0 & exome == 0)\nexome_pos_blood_neg <- filter(clonotypes, blood == 0 & exome > 0)\n\nclonotype_common <- \"TGTGCCACCAGCAGAGACACAGAGCTGCAGTGCTTCCTGCTCTCTGTTCATAAACCTCATTGTTTCCCAGATCCAGGTGCTTTCTCT\"\nshared <- clonotypes[which(clonotypes$clonotype==clonotype_common),]\n\n# compare exome and rna\nexome_pos_rna_pos <- filter(clonotypes, rna > 0 & exome > 0)\nexome_neg_rna_pos <- filter(clonotypes, rna > 0 & exome == 0)\nexome_pos_rna_neg <- filter(clonotypes, rna == 0 & exome > 0)\n\n",
+    "created" : 1469048265582.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4162157303",
+    "id" : "28E7B7C0",
+    "lastKnownWriteTime" : 1468543747,
+    "last_content_update" : 1468543747,
+    "path" : "~/tcrseq/new/rstudio/clonotypes_analysis.R",
+    "project_path" : "clonotypes_analysis.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

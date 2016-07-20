@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "\nccle_ref <- read.csv(\"/Users/Eric/tcrseq/new/reference/cghub_ccla_6-14.tsv\", sep=\"\\t\")\n\nimseq <- rep(NA, nrow(ccle_ref))\n\n# 194d8dca-fde8-4684-8925-8152b246a3e8: 1\n# 356388e6-9ab9-4041-9ff5-c5c0bdca84d4: 1\n# 991e47a3-0dba-47de-82b6-e46c808e5f14: 1\n# a337c425-4314-40c6-a40a-a444781bd1b7: 1 \n# b20be3a8-48c8-4454-8a8f-6266250615b8: 1\n# bd30ed4a-1e38-4b26-928c-f0fb20a27181: 1\n# e89ae720-cc5f-445d-8388-1fab3c3742ad: 2\n# all RNA",
+    "created" : 1466630010704.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "17177649",
+    "id" : "F424C6BA",
+    "lastKnownWriteTime" : 1469047765,
+    "last_content_update" : 1469047765917,
+    "path" : "~/tcrseq/new/rstudio/ccle.R",
+    "project_path" : "ccle.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,15 @@
+Scripts written by Eric Levy for work in the oncogx lab at UCSD.
+
+Levy, E., Marty, R., Garate-Calderon, V., Woo, B., Dow, M., Armisen, R., Carter, H., Harismendy, O. 
+ “Immune DNA signature of T-cell infiltration in breast tumor exomes.” Scientific Reports (in press).
+
+TCRSEQ_BASH: bash scripts used to download, process, and run CDR3 read detection tools on TCGA data
+Most finalized script is bamslicer_imseq.sh, which was used for CDR3 read profiling on pancancer data
+
+TCRSEQ_R: R scripts used for data compilation and analysis of CDR3 read output and various other TCGA
+data for the purposes of the BRCA paper.
+
+TCRSEQ_python: Python script used to compare and compile clonotype results between a pooled TCRB enriched
+FASTQ file run through IMSEQ and processed tsv files from Adaptive.
+
+Rstudio_pancan: Rstudio project and code for data compilation and analysis of CDR3 read data from ongoing pancan study.
