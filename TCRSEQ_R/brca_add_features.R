@@ -78,7 +78,7 @@ results_clustering <- results_mutation
 results_all <- cbind(results_all, patient_mutation)
 
 ### purity
-purity <- read.csv("pancancer_purity_butte.txt", sep="\t")
+purity <- read.csv("/Users/Eric/BRCA/pancancer_purity_butte.txt", sep="\t")
 
 # process purity matrix
 purity <- as.matrix(purity)
@@ -87,7 +87,7 @@ purity <- purity[,-1]
 
 # match samples
 patient_purity <- c()
-data_list <- c("ESTIMATE")
+data_list <- c("CPE")
 for (i in 1:nrow(results))
 {
   sample_id <- substr(as.character(results$sample_id[i]),1,16)

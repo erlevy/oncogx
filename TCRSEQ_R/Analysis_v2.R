@@ -2,7 +2,7 @@
 library(dplyr)
 library(ggplot2)
 
-cdr3_results_current<-read.csv("cdr3_results_with_expression_blood_ptprc_burden_purity_gsva_clustering_age_dedup_1078.txt", sep="\t")
+cdr3_results_current<-read.csv("/Users/Eric/BRCA/cdr3_results_with_expression_blood_ptprc_burden_purity_gsva_clustering_age_dedup_1078.txt", sep="\t")
 
 #renaming groups
 cdr3_results_current<-mutate(cdr3_results_current,clinical_group=ifelse(clinical_group=="her2-","HR+/Her2-",as.character(clinical_group)))
