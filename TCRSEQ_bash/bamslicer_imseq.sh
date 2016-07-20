@@ -4,7 +4,7 @@
 ## For more processes change the max_jobs variable
 
 base_dir="/scratch/data/pancancer"
-filename="${base_dir}/ref/pancancer_exome_ref_1.txt"
+filename="${base_dir}/ref/rna_uuid_todo_final.txt"
 filelines=`cat $filename`
 data_dir="${base_dir}/data"
 output_dir="${base_dir}/"
