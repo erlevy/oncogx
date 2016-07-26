@@ -79,19 +79,19 @@ distances <- distances_mat[,1]
 hist(distances, xlab="Minimum string distance", main="Distances with Holt")
 
 # within distances
-# distances_mat <- matrix(NA, nrow=length(pancan_rna_unique_aa), ncol=3)
-# for (i in 1:length(pancan_rna_unique_aa))
-# {
-#   pancan_rna_unique_without <- pancan_rna_unique_aa[-i]
-#   distances <- stringdist(pancan_rna_unique_aa[i], pancan_rna_unique_without)
-#   distance <- min(distances)
-#   aa_without <- pancan_rna_unique_without[which(distances==distance)][1]
-#   aa_pancan <- pancan_rna_unique_aa[i]
-#   distances_mat[i,] <- c(distance, aa_pancan, aa_without)
-# }
-# 
-# 
-# write.table(distances_mat, "pancan_clonotypes_within_edit_distances.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
+distances_mat <- matrix(NA, nrow=length(pancan_rna_unique_aa), ncol=3)
+for (i in 1:length(pancan_rna_unique_aa))
+{
+ pancan_rna_unique_without <- pancan_rna_unique_aa[-i]
+ distances <- stringdist(pancan_rna_unique_aa[i], pancan_rna_unique_without)
+ distance <- min(distances)
+ aa_without <- pancan_rna_unique_without[which(distances==distance)][1]
+ aa_pancan <- pancan_rna_unique_aa[i]
+ distances_mat[i,] <- c(distance, aa_pancan, aa_without)
+}
+ 
+ 
+write.table(distances_mat, "pancan_clonotypes_within_edit_distances.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
 
 distances_mat <- read.csv("/Users/Eric/tcrseq/new/processed/pancan_clonotypes_within_edit_distances.txt", sep="\t", header=FALSE)
 

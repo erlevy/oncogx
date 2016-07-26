@@ -12,7 +12,7 @@ wait
 samtools sort -@ 28 ${output}/aln.bam ${output}/aln.sorted
 wait
 
-java -Xmx16g -jar /mnt/idash/Genomics/bin/picard-tools/MarkDuplicates.jar INPUT=${output}/aln.sorted.bam OUTPUT=${output}/aln.sorted.dedup.bam METRICS_FILE=${output}/metrics.txt
+java -Xmx16g -jar /mnt/idash/Genomics/bin/picard-tools/MarkDuplicates.jar INPUT=${output}/aln.sorted.bam OUTPUT=${output}/aln.sorted.dedup.bam METRICS_FILE=${output}/metrics.txt REMOVE_DUPLICATES=TRUE
 
 java -Xmx16g -jar /mnt/idash/Genomics/bin/picard-tools/CalculateHsMetrics.jar  BAIT_INTERVALS=${exome}/humanV4-baits_hg19_lite.interval_list TARGET_INTERVALS=${exome}/humanV4-targets_hg19_lite.interval_list INPUT=${output}/aln.sorted.dedup.bam OUTPUT=${output}/aln.sorted.dedup.bam.metrics
 

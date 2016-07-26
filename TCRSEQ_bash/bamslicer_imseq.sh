@@ -115,7 +115,7 @@ function fastq_convert {
   	wait
   	samtools sort $bam_outpath/$name.TCRreg.bam $bam_outpath/$name.TCRreg.sorted
  	wait
- 	java -Xmx16g -jar /mnt/idash/Genomics/bin/picard-tools/MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT VERBOSITY=ERROR INPUT=$bam_outpath/$name.TCRreg.sorted.bam OUTPUT=$bam_outpath/$name.TCRreg.sorted.dedup.bam METRICS_FILE=$bam_outpath/$name.metrics.txt
+ 	java -Xmx16g -jar /mnt/idash/Genomics/bin/picard-tools/MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT VERBOSITY=ERROR INPUT=$bam_outpath/$name.TCRreg.sorted.bam OUTPUT=$bam_outpath/$name.TCRreg.sorted.dedup.bam METRICS_FILE=$bam_outpath/$name.metrics.txt REMOVE_DUPLICATES=TRUE
  	wait
  	bedtools bamtofastq -i $bam_outpath/$name.TCRreg.sorted.dedup.bam -fq $bam_outpath/$name.TCRreg.fastq
  	wait

@@ -14,6 +14,20 @@ exome_pos_blood_neg <- filter(clonotypes, blood == 0 & exome > 0)
 clonotype_common <- "TGTGCCACCAGCAGAGACACAGAGCTGCAGTGCTTCCTGCTCTCTGTTCATAAACCTCATTGTTTCCCAGATCCAGGTGCTTTCTCT"
 shared <- clonotypes[which(clonotypes$clonotype==clonotype_common),]
 
+public_clonotypes_patients <- unique(exome_pos_blood_pos$patient_id)
+
+exome_pos <- filter(clonotypes, exome > 0)
+blood_pos <- filter(clonotypes, blood > 0)
+
+exome_blood_shared_aa <- unique(intersect(exome_pos$aa, blood_pos$aa))
+exome_or_blood <- filter(clonotypes, exome > 0 | blood > 0)
+exome_or_blood_patients <- exome_or_blood$patient_id
+exome_blood_public_aa <- names(which(table(exome_or_blood$aa)>1))
+exome_blood_shared_all <- filter(exome_or_blood, aa %in% exome_blood_shared_aa)
+exome_blood_shared_patients <- exome_blood_shared_all$patient_id
+exome_blood_public_all <- filter(exome_or_blood, aa %in% exome_blood_public_aa)
+exome_blood_public_patients <- unique(exome_blood_public_all$patient_id)
+
 # compare exome and rna
 exome_pos_rna_pos <- filter(clonotypes, rna > 0 & exome > 0)
 exome_neg_rna_pos <- filter(clonotypes, rna > 0 & exome == 0)

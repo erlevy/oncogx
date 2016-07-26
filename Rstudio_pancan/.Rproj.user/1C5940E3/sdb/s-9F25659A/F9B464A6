@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(dplyr)\n\nclonotypes <- read.csv(\"/Users/Eric/tcrseq/new/processed/pancan_clonotypes_all_7-14-2016.txt\", sep=\"\\t\")\n\nclonotypes$clonotype <- as.character(clonotypes$clonotype)\nclonotypes$patient_id <- as.character(clonotypes$patient_id)\nclonotypes$aa <- as.character(clonotypes$aa)\n\n# compare exome and blood\nexome_pos_blood_pos <- filter(clonotypes, blood > 0 & exome > 0)\nexome_neg_blood_pos <- filter(clonotypes, blood > 0 & exome == 0)\nexome_pos_blood_neg <- filter(clonotypes, blood == 0 & exome > 0)\n\nclonotype_common <- \"TGTGCCACCAGCAGAGACACAGAGCTGCAGTGCTTCCTGCTCTCTGTTCATAAACCTCATTGTTTCCCAGATCCAGGTGCTTTCTCT\"\nshared <- clonotypes[which(clonotypes$clonotype==clonotype_common),]\n\npublic_clonotypes_patients <- unique(exome_pos_blood_pos$patient_id)\n\nexome_pos <- filter(clonotypes, exome > 0)\nblood_pos <- filter(clonotypes, blood > 0)\n\nexome_blood_shared_aa <- unique(intersect(exome_pos$aa, blood_pos$aa))\nexome_or_blood <- filter(clonotypes, exome > 0 | blood > 0)\nexome_or_blood_patients <- exome_or_blood$patient_id\nexome_blood_public_aa <- names(which(table(exome_or_blood$aa)>1))\nexome_blood_shared_all <- filter(exome_or_blood, aa %in% exome_blood_shared_aa)\nexome_blood_shared_patients <- exome_blood_shared_all$patient_id\nexome_blood_public_all <- filter(exome_or_blood, aa %in% exome_blood_public_aa)\nexome_blood_public_patients <- unique(exome_blood_public_all$patient_id)\n\n# compare exome and rna\nexome_pos_rna_pos <- filter(clonotypes, rna > 0 & exome > 0)\nexome_neg_rna_pos <- filter(clonotypes, rna > 0 & exome == 0)\nexome_pos_rna_neg <- filter(clonotypes, rna == 0 & exome > 0)\n\n",
+    "created" : 1468542991227.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2398588360",
+    "id" : "F9B464A6",
+    "lastKnownWriteTime" : 1469501821,
+    "last_content_update" : 1469501821147,
+    "path" : "~/tcrseq/new/rstudio/clonotypes_analysis.R",
+    "project_path" : "clonotypes_analysis.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
