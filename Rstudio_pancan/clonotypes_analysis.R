@@ -1,10 +1,10 @@
 library(dplyr)
 
-clonotypes <- read.csv("/Users/Eric/tcrseq/new/processed/pancan_clonotypes_all_7-14-2016.txt", sep="\t")
+clonotypes <- read.csv("/Users/Eric/tcrseq/new/processed/pancan_clonotypes_all_7-26-2016.txt", sep="\t")
 
 clonotypes$clonotype <- as.character(clonotypes$clonotype)
 clonotypes$patient_id <- as.character(clonotypes$patient_id)
-clonotypes$aa <- as.character(clonotypes$aa)
+clonotypes$nuc <- as.character(clonotypes$nuc)
 
 # compare exome and blood
 exome_pos_blood_pos <- filter(clonotypes, blood > 0 & exome > 0)
@@ -27,6 +27,16 @@ exome_blood_shared_all <- filter(exome_or_blood, aa %in% exome_blood_shared_aa)
 exome_blood_shared_patients <- exome_blood_shared_all$patient_id
 exome_blood_public_all <- filter(exome_or_blood, aa %in% exome_blood_public_aa)
 exome_blood_public_patients <- unique(exome_blood_public_all$patient_id)
+
+public_aa <- names(which(table(clonotypes$clonotype)>1))
+public_aa_n <- c()
+for (i in 1:length(public_aa))
+{
+  public_aa_n <- c(public_aa_n, nrow(filter(clonotypes, clonotype==public_aa[i])))
+}
+
+public_all <- filter(clonotypes, clonotype %in% public_aa)
+public_patients <- unique(public_all$patient_id)
 
 # compare exome and rna
 exome_pos_rna_pos <- filter(clonotypes, rna > 0 & exome > 0)

@@ -13,6 +13,10 @@ mycl <- cutree(hc, h=max(hc$height/1.5))
 
 results_hc <- cbind(results, mycl)
 
+mycl_df <- mutate(results_hc,gsva_colors=ifelse(mycl==4,"red","black"))
+cohort_colors <- cbind(mycl_df$gsva_colors, mycl_df$gsva_colors)
+heatmap.plus(as.matrix(signatures), col=bluered(51), scale="none", Colv=NA, labRow="", RowSideColors=cohort_colors)
+
 # add clusters to the 1078 results table (6 without the expression data)
 mycl_all <- c()
 names(mycl) <- results_hc[,1]

@@ -6,7 +6,7 @@ library(gplots)
 library(heatmap.plus)
 library(reshape)
 
-results <- read.csv("/Users/Eric/tcrseq/new/processed/pancan_exome_rna_gsva_clinical_6-14-2016.txt", sep="\t")
+results <- read.csv("/Users/Eric/tcrseq/new/processed/pancan_exome_rna_blood_tcrb_gsva_clinical_7-13-2016.txt", sep="\t")
 
 ### FROM OLD BRCA ###
 #set the table working on
@@ -216,6 +216,13 @@ for (i in 1:nrow(cdr3_results_current))
 colnames(cdr3_results_surv) <- c("iDNA_nonzero", "days_compound", "vital_status")
 rownames(cdr3_results_surv) <- seq(1:nrow(cdr3_results_surv))
 cdr3_results_surv <- cbind(cdr3_results_current, cdr3_results_surv)
+results_out_surv <- cbind(results, cdr3_results_surv$days_compound, cdr3_results_surv$vital_status)
+colnames(results_out_surv)[44] <- "days_compound"
+colnames(results_out_surv)[45] <- "vital_status"
+
+write.table(results_out_surv, "/Users/Eric/tcrseq/new/processed/pancan_exome_rna_blood_tcrb_gsva_clinical_surv_7-27-2016.txt", sep="\t", 
+            row.names=FALSE, quote=FALSE)
+
 
 surv_results <- function(surv_matrix)
 {
