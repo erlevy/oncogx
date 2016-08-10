@@ -7,7 +7,7 @@ library(heatmap.plus)
 
 #results <- read.csv("cdr3_results_with_groups_complete.txt", sep="\t")
 #results <- read.csv("cdr3_results_with_expression.txt", sep="\t")
-results <- read.csv("/Users/Eric/cdr3_results_with_blood_1078.txt", sep="\t")
+results <- read.csv("/Users/Eric/BRCA/cdr3_results_with_blood_1078.txt", sep="\t")
 idxstats <- "/Users/Eric/tcga/clonotypes/final/rna_idxstats/"
 
 exome_rpm <- as.numeric(results$exome_imseq)/as.numeric(results$exome_reads)*1000000
