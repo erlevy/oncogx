@@ -14,8 +14,32 @@ library(ggrepel)
 results <- read.csv("/Users/Eric/tcrseq/new/final/pancan_results_8-10-2016.txt", sep="\t")
 clonotypes <- read.csv("/Users/Eric/tcrseq/new/final/pancan_clonotypes_8-10-2016.txt", sep="\t")
 
+results_out <- results[,c("patient_uuid", "sample_barcode", "cohort", "exome_reads", "exome_cdr3", "rna_reads", 
+                          "rna_cdr3", "blood_reads", "blood_cdr3", "gender", "days_to_birth",
+                          "days_compound" ,"vital_status")]
+write.table(results_out, "pancan_cdr3_results_phenotypes_8-26-2106.txt", sep="\t", quote=FALSE, row.names=FALSE)
+
 cdr3_results_current <- results
 cancer_current <- cdr3_results_current
+
+# initial numbers
+tumor_exome_present <- filter(results, !is.na(exome_cdr3))
+tumor_rna_present <- filter(results, !is.na(rna_cdr3))
+blood_exome_present <- filter(results, !is.na(blood_cdr3))
+all_three_present <- filter(results, !is.na(exome_cdr3) & !is.na(rna_cdr3) & !is.na(blood_cdr3))
+
+cohort_n <- table(results$cohort)
+cohort_tumor_exome_n <- table(tumor_exome_present$cohort)
+cohort_tumor_rna_n <- table(tumor_rna_present$cohort)
+cohort_blood_exome_n <- table(blood_exome_present$cohort)
+cohort_all_three_n <- table(all_three_present$cohort)
+
+cohort_n_out <- cbind(cohort_n, cohort_tumor_exome_n, cohort_tumor_rna_n, cohort_blood_exome_n, cohort_all_three_n)
+
+write.table(cohort_n_out, "cohort_data_types_n.txt", quote=FALSE, sep="\t")
+
+tumor_exome_rna_present <- filter(results, !is.na(exome_cdr3) & !is.na(rna_cdr3))
+
 # remove cohort size <400
 # BLCA, BRCA, COAD, HNSC, KIRC, LGG, LUAD, LUSC, OV, PRAD, STAD, THCA, UCEC
 #cancer_current <- filter(cdr3_results_current, cohort=="BLCA" | cohort=="BRCA" | cohort=="COAD" | cohort=="HNSC" |
@@ -185,8 +209,6 @@ exome_pos_vs_rna_df_melt <- melt(exome_pos_vs_rna_df)
 
 ggplot(exome_pos_vs_rna_df_melt, aes(x=Cohort, y=value, fill=variable)) + geom_bar(stat="identity", position="fill") + labs(x="Cohort", y="Fraction") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(text=element_text(size=16))
 
-### FIGURE: non c66 cohort fraction barplot ###
-ggplot(non_shared_patients_df, aes(x=reorder(Cohort, -Freq.2), y=Freq.2)) + geom_bar(stat="identity") + labs(x="Cohort", y="Fraction of patients") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(text=element_text(size=16))
 
 # rna vs. dna
 

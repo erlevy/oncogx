@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(dplyr)\n\nburden_dir <- \"/Users/Eric/tcrseq/new/mutation/mutation_sample/\"\nresults <- read.csv(\"/Users/Eric/tcrseq/new/final/pancan_results_8-10-2016.txt\", sep=\"\\t\")\n\nresults <- arrange(results, cohort)\n\nburden <- rep(NA, nrow(results))\ncancer_type_last <- \"\"\nmutation_file <- c()\nfor (i in 1:nrow(results))\n{\n  cancer_type <- as.character(results$cohort[i])\n  if (cancer_type!=cancer_type_last) {\n    mutation_start <- paste(burden_dir, cancer_type, sep=\"\")\n    mutation_extension <- paste(mutation_start, \"-TP.samplefeatures.txt\", sep=\"\")\n    if (file.exists(mutation_extension)) {\n      mutation_file <- read.csv(mutation_extension, sep=\"\\t\")\n    }\n  }\n  \n  nonsyn <- NA\n  patient_barcode <- substr(as.character(results$sample_barcode[i]), 1, 12)\n  # rate_non\n  row_match <- which(as.character(mutation_file[,1])==patient_barcode)\n  \n  if (length(row_match)>0) {nonsyn <- mutation_file[row_match, \"rate_non\"]}\n  burden[i] <- nonsyn\n  \n  if ((i %% 1000)==0) {print(i)}\n}\n\nresults_burden <- cbind(results, burden)\ncolnames(results_burden)[57] <- \"rate_non\"\n\nwrite.table(results_burden, \"/Users/Eric/tcrseq/new/final/pancan_results_8-28-2016.txt\", sep=\"\\t\", \n            row.names=FALSE, quote=FALSE)\n\n",
+    "created" : 1472426504323.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2741058343",
+    "id" : "74E5A3E2",
+    "lastKnownWriteTime" : 1472448545,
+    "last_content_update" : 1472448545644,
+    "path" : "~/tcrseq/new/rstudio_data/mutational_burden.R",
+    "project_path" : "mutational_burden.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
