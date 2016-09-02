@@ -3,11 +3,7 @@ import os
 import subprocess
 import csv
 
-###
-# Compares IMSEQ output of pooled fastq file from ImmunoSeq enrichment protocol to
-# processed output results tables provided from Adaptive
-###
-
+# path to file where the clonotypes results tsv files are (which have the tcga names still)
 input_imseq = "/scratch/adaptive/adaptive_out.tsv"
 input_adaptive = "/scratch/adaptive/FromImmunoSeq/"
 output = "/scratch/adaptive/output/"
@@ -97,7 +93,27 @@ for i in counts:
 		freq_row[8] =float( X4015F[X4015F_aa.index(i)][3])		
 	freqs.append(freq_row)
 
-with open("adaptive_imseq_comparison.tsv", "wb") as g:
+with open("adaptive_imseq_freq_comparison.tsv", "wb") as g:
 	writer = csv.writer(g)
 	writer.writerows(freqs)	
+	
+adaptive_all_aa = list(set(X4015B_aa)|set(X1285F2_aa)|set(X1285B_aa)|set(X1304F_aa)|set(X1285F1_aa)|set(X1304B_aa)|set(X4015F_aa))
+
+adaptive_comparison = list()
+adaptive_comparison.append(["aa", "imseq", "freq"])
+for i in adaptive_all_aa:
+	if "*" in i:
+		continue
+	freq_row = ["", 0, 0]
+	freq_row[0] = i
+	if (i in counts):
+		freq_row[1] = 1
+		freq_row[2] = float(counts[i])/float(len(imseq_aa))
+	adaptive_comparison.append(freq_row)
+
+with open("adaptive_imseq_presence_comparison.tsv", "wb") as g:
+	writer = csv.writer(g)
+	writer.writerows(adaptive_comparison)	
+	
+	
  	
