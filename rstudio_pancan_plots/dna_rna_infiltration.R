@@ -26,11 +26,11 @@ cancer_current <- cdr3_results_current
 #cancer_split <- split(cancer_current, cancer_current$cohort)
 
 # remove THYM since it only has ONE exome case, UVM and CHOL have no RNA
-#cancer_current <- filter(cdr3_results_current, cohort != "THYM", cohort != "UVM", cohort != "CHOL")
-cancer_current <- filter(cdr3_results_current, cohort != "THYM", cohort != "UVM", cohort != "CHOL",
-                         cohort != "ACC", cohort != "CESC", cohort != "DLBC", cohort != "ESCA", 
-                         cohort != "KICH", cohort != "LGG", cohort != "LIHC", cohort != "MESO",
-                         cohort != "PCPG", cohort != "TGCT", cohort != "UCS")
+cancer_current <- filter(cdr3_results_current, cohort != "THYM", cohort != "UVM", cohort != "CHOL", cohort != "DLBC")
+#cancer_current <- filter(cdr3_results_current, cohort != "THYM", cohort != "UVM", cohort != "CHOL",
+#                         cohort != "ACC", cohort != "CESC", cohort != "DLBC", cohort != "ESCA", 
+#                         cohort != "KICH", cohort != "LGG", cohort != "LIHC", cohort != "MESO",
+#                         cohort != "PCPG", cohort != "TGCT", cohort != "UCS")
 cancer_current$cohort <- factor(cancer_current$cohort)
 cancer_split <- split(cancer_current, cancer_current$cohort)
 
@@ -136,6 +136,28 @@ heatmap.plus(-log10(dunn_mat), col=bluered(51), symm=TRUE, keep.dendro=FALSE, Ro
 
 arrange(dunn$res, P.adj)
 
+### one-vs-all exome testing
+
+one_vs_all_exome <- rep(NA, length(unique(cancer_current$cohort)))
+names(one_vs_all_exome) <- unique(cancer_current$cohort)
+
+one_vs_all_rna <- rep(NA, length(unique(cancer_current$cohort)))
+names(one_vs_all_rna) <- unique(cancer_current$cohort)
+
+for (i in 1:length(one_vs_all_exome)) {
+  cohort_i <- names(one_vs_all_exome)[i]
+  cohort_exome_rpm <- filter(cancer_current, cohort == cohort_i)$exome_rpm
+  others_exome_rpm <- filter(cancer_current, cohort != cohort_i)$exome_rpm
+  cohort_rna_rpm <- filter(cancer_current, cohort == cohort_i)$rna_rpm
+  others_rna_rpm <- filter(cancer_current, cohort != cohort_i)$rna_rpm
+  
+  one_vs_all_exome[i] <- wilcox.test(cohort_exome_rpm, others_exome_rpm)$p.value
+  one_vs_all_rna[i] <- wilcox.test(cohort_rna_rpm, others_rna_rpm)$p.value
+}
+
+sort(p.adjust(one_vs_all_exome, method="BH"))
+sort(p.adjust(one_vs_all_rna, method="BH"))
+
 # contrast infiltration of cancer types
 exome_split <- lapply(cancer_split, '[[', "exome_rpm")
 rna_split <- lapply(cancer_split, '[[', "rna_rpm")
@@ -154,7 +176,11 @@ avgs_plot <- as.data.frame(cbind(exome_avg, rna_avg, cohort_sizes))
 ### FIGURE: average RNA vs. tumor exome RPM by cohort ###
 
 #ggplot(avgs_plot, aes(exome_avg, rna_avg, size=cohort_sizes, colour=rownames(avgs_plot))) + geom_point() + labs(title="Cohort average exome and RNA RPM", x="log(exome CDR3 rpm)", y="log(RNA CDR3 rpm)")
-ggplot(avgs_plot, aes(exome_avg, rna_avg)) + geom_point() + labs(x="exome CDR3 rpm (log10)", y="RNA CDR3 rpm (log10)") + geom_text_repel(data=avgs_plot, aes(label=rownames(avgs_plot)), size=6) + theme(text=element_text(size=16))
+ggplot(avgs_plot, aes(exome_avg, rna_avg)) + geom_point() + labs(x="Normalized DNA CDR3 fraction (log10)", y="Normalized RNA CDR3 fraction (log10)") + geom_text_repel(data=avgs_plot, aes(label=rownames(avgs_plot)), size=6) + theme(text=element_text(size=16))
+
+
+### FIGURE: RNA vs. CDR3 read correlations
+ggplot(cancer_current, aes(exome_rpm, rna_rpm))
 
 ### FIGURE: Venn diagram/overall profiling of cohort sizes ###
 
@@ -171,7 +197,7 @@ grid.newpage()
 draw.triple.venn(area1 = exome_n, area2 = rna_n, area3 = blood_n, 
                  n12 = exome_rna_n, n23 = blood_rna_n, n13 = exome_blood_n,
                  n123 = exome_rna_blood_n, fill = c("skyblue", "orange", "green"),
-                 category = c("Tumor exome", "Tumor RNA", "Blood exome"), cex=2, cat.cex=2, 
+                 category = c("Tumor DNA", "Tumor RNA", "Blood DNA"), cex=2, cat.cex=2, 
                  cat.pos=c(-10,10,180), cat.dist=c(0.05, 0.05, 0.05))
 
 exome_rna_blood <- filter(cancer_current, !is.na(rna_rpm) & !is.na(exome_rpm) & !is.na(blood_rpm))
@@ -204,24 +230,23 @@ gsva_cluster_split <- lapply(cancer_split, '[[', "gsva_cluster")
 
 exome_read_melt <- melt(exome_read_split)
 exome_read_melt$value <- log(exome_read_melt$value, 10)
-ggplot(exome_read_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="Exome read counts by cohort", x="Cohort", y="log(read count)")
+ggplot(exome_read_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="Tumor DNA read counts by cohort", x="Cohort", y="Number of reads (log10)") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(text=element_text(size=16))
 
 rna_read_melt <- melt(rna_read_split)
 rna_read_melt$value <- log(rna_read_melt$value, 10)
-ggplot(rna_read_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="RNA read counts by cohort", x="Cohort", y="log(read count)")
+ggplot(rna_read_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="Tumor RNA read counts by cohort", x="Cohort", y="Number of reads (log10)") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(text=element_text(size=16))
 
 exome_rpm_melt <- melt(exome_rpm_split)
 exome_rpm_melt$value <- log(exome_rpm_melt$value, 10)
-ggplot(exome_rpm_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="Tumor exome RPM counts by cohort", x="Cohort", y="log(read count)")
+ggplot(exome_rpm_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="Tumor exome RPM counts by cohort", x="Cohort", y="log(read count)") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(text=element_text(size=16))
 
 rna_rpm_melt <- melt(rna_rpm_split)
 rna_rpm_melt$value <- log(rna_rpm_melt$value, 10)
-ggplot(rna_rpm_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="Tumor rna RPM counts by cohort", x="Cohort", y="log(read count)")
+ggplot(rna_rpm_melt, aes(x=L1, y=value)) + geom_boxplot() + labs(title="Tumor rna RPM counts by cohort", x="Cohort", y="log(read count)") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(text=element_text(size=16))
 
 # iDNA vs purity for cancer types
 frac_pure<-aggregate(patient_purity~iDNA_score,data=cancer_current,FUN=function(x) length(x[x>=0.80])/length(x))
-ggplot(frac_pure,aes(factor(reorder(iDNA_score,as.numeric(iDNA_score))),patient_purity))+geom_bar(stat="identity")+theme(text=element_text(size=32))+xlab("iDNA score")+ylab("Fraction of tumors with ≥80% purity")+theme_classic(base_size = 24)
-
+ggplot(frac_pure,aes(factor(reorder(iDNA_score,as.numeric(iDNA_score))),patient_purity))+geom_bar(stat="identity")+theme(text=element_text(size=32))+xlab("iDNA score")+ylab("Fraction of tumors with ≥80% purity")+theme_classic(base_size = 16)
 
 # exome CDR3 high without RNA
 exome_pos_rna_neg <- filter(cancer_current,D=="D+",R=="R-")
@@ -258,10 +283,10 @@ exome_pos_new <- mutate(exome_pos,R2=ifelse(rna_rpm==0,0,1))
 wilcox.test(exome_pos_new$tcrb_rpm, exome_pos_new$R2)
 boxplot(lapply(split(exome_pos$tcrb_rpm, exome_pos$R), log10))
 rna_tcrb_box <- melt(lapply(split(exome_pos$tcrb_rpm, exome_pos$R), log10))
-ggplot(rna_tcrb_box, aes(x=L1, y=value)) + geom_boxplot() + labs(x="RNA CDR3", y="TCRB RPM (log10)") + theme(text=element_text(size=16))
+ggplot(rna_tcrb_box, aes(x=L1, y=value)) + geom_boxplot() + labs(x="", y="TCRB gene expression (log10 RPM)") + theme(text=element_text(size=16))
 
 rna_exome_box <- melt(lapply(split(exome_pos$exome_rpm, exome_pos$R), log10))
-ggplot(rna_exome_box, aes(x=L1, y=value)) + geom_boxplot() + labs(x="RNA CDR3", y="Tumor Exome RPM (log10)") + theme(text=element_text(size=16))
+ggplot(rna_exome_box, aes(x=L1, y=value)) + geom_boxplot() + labs(x="", y="Tumor DNA CDR3 abundance (log10)") + theme(text=element_text(size=16))
 
 # idna by cohort
 ggplot(cancer_current,aes(as.factor(iDNA_score)))+geom_bar()+facet_wrap(~cohort, ncol=4, scales="free_y")

@@ -2,10 +2,13 @@ library(dplyr)
 library(ggplot2)
 library(colorspace)
 library(viridis)
+library(reshape2)
 
 results <- read.csv("/Users/Eric/tcrseq/new/final/pancan_results_8-10-2016.txt", sep="\t")
 clonotypes <- read.csv("/Users/Eric/tcrseq/new/final/pancan_clonotypes_8-10-2016.txt", sep="\t")
 
+results <- filter(results, cohort != "DLBC")
+                         
 clonotypes$clonotype <- as.character(clonotypes$clonotype)
 clonotypes$patient_id <- as.character(clonotypes$patient_id)
 clonotypes$nuc <- as.character(clonotypes$nuc)
@@ -47,6 +50,8 @@ exome_blood_shared_patients_no_c66 <- unique(exome_blood_shared_no_c66$patient_i
 # only "sticky" clonotype
 exome_blood_shared_only_c66 <- filter(exome_or_blood, clonotype==clonotype_common)
 exome_blood_shared_patients_only_c66 <- unique(exome_blood_shared_only_c66$patient_id)
+
+exome_blood_shared_patients_only_c66_clonotypes <- filter(clonotypes, patient_id %in% exome_blood_shared_patients_only_c66)
 
 # includes RNA
 public_aa <- names(which(table(clonotypes$clonotype)>1))
@@ -191,3 +196,11 @@ ggplot(rna_pos_results, aes(log10(tcrb_reads), log10(rna_clonotypes), colour=coh
 cor.test(exome_pos_results$exome_reads, exome_pos_results$exome_clonotypes)
 cor.test(rna_pos_results$tcrb_rpm, rna_pos_results$rna_rpm)
 cor.test(rna_pos_results$tcrb_reads, rna_pos_results$rna_clonotypes)
+
+# dna rna shared poisson statistic
+dna_and_rna_patients <- as.character(filter(results, exome_cdr3 > 0 & rna_cdr3 > 0)$patient_uuid)
+dna_and_rna_clonotypes <- filter(clonotypes, patient_id %in% dna_and_rna_patients)
+length(unique(dna_and_rna_clonotypes$clonotype))
+
+
+
