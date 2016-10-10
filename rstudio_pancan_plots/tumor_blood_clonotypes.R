@@ -113,7 +113,7 @@ ggplot(read_comparison_df, aes(x=group, y=reads)) + geom_boxplot() + labs(x="Sha
 shared_df <- data.frame(reads=log10(shared_patients_results$blood_reads), group=rep("Shared", length(shared_patients_results$blood_reads)))
 non_shared_df <- data.frame(reads=log10(exome_blood_non_public$blood_reads), group=rep("Non-Shared", length(exome_blood_non_public$blood_reads)))
 read_comparison_df <- rbind(shared_df, non_shared_df)
-ggplot(read_comparison_df, aes(x=group, y=reads)) + geom_boxplot() + labs(x="Shared clonotype group", y="Number of tumor RNA reads (log10)")+ theme(text=element_text(size=16))
+ggplot(read_comparison_df, aes(x=group, y=reads)) + geom_boxplot() + labs(x="Shared clonotype group", y="Number of blood DNA reads (log10)")+ theme(text=element_text(size=16))
 
 ### new stuff
 

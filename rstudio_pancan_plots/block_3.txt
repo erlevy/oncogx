@@ -1,0 +1,24 @@
+x
+(Intercept)	0.4757
+age	0.9997
+gendermale	0.8703
+iDNA_blood_score	0.9959
+nonsyn_score	1.0168
+cohortBLCA	1.1501
+cohortBRCA	1.4534
+cohortCOAD	1.3308
+cohortGBM	1.4946
+cohortHNSC	1.5238
+cohortKIRC	2.3767
+cohortKIRP	1.7295
+cohortLUAD	1.5348
+cohortLUSC	1.5909
+cohortOV	1.4686
+cohortPAAD	1.4444
+cohortPRAD	1.5985
+cohortREAD	1.33
+cohortSARC	1.2655
+cohortSKCM	0.8419
+cohortSTAD	1.6548
+cohortTHCA	1.1077
+cohortUCEC	1.5036

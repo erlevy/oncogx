@@ -77,8 +77,8 @@ signature_cols <- c("T Regs", "T CD8", "T CD4 Naive", "T CD4 Mem. Resting", "T C
 #gsva_colors <- color.scale(as.numeric(cancer_heatmap$gsva_cluster), color.spec="bluerange")
 #cohort_colors <- matrix(c(cohort_colors, cohort_colors), ncol=2, byrow=FALSE)
 
-#heatmap.plus(as.matrix(signatures), col=bluered(51), scale="none", Colv=NA, labRow="",
-#             labCol=signature_cols, RowSideColors=cohort_colors)
+heatmap.plus(as.matrix(signatures), col=bluered(51), scale="none", Colv=NA, labRow="",
+             labCol=signature_cols, RowSideColors=cohort_colors)
 
 #heatmap.plus(as.matrix(signatures), col=bluered(51), scale="none", Colv=NA, labRow="",
 #             labCol=signature_cols, cexCol=2, margins=c(22,6))
